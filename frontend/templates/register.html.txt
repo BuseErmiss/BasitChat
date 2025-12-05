@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Kayıt Ol</title>
+    <link rel="stylesheet" href="/static/style(login-register).css" />
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+</head>
+<body>
+    <h2>Kayıt Ol</h2>
+    <form method="post" action="/register">
+        <label for="username">Kullanıcı Adı:</label><br />
+        <input type="text" name="username" id="username" required /><br /><br />
+
+        <label for="password">Şifre:</label><br />
+        <input type="password" name="password" id="password" required /><br /><br />
+
+        <button type="submit">Kayıt Ol</button>
+    </form>
+
+    <p>Zaten hesabınız var mı? <a href="/login">Giriş Yap</a></p>
+</body>
+</html>
+
+
+<button id="toggleDarkMode">🌙 Dark Mode</button>
+
+<script>
+  const toggleBtn = document.getElementById("toggleDarkMode");
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    toggleBtn.textContent = document.body.classList.contains("dark-mode")
+      ? "☀️ Light Mode"
+      : "🌙 Dark Mode";
+  });
+</script>

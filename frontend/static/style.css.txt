@@ -1,0 +1,242 @@
+/* --- Genel Ayarlar --- */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f6c7d0;
+  padding: 40px;
+  margin: 0;
+  color: #333;
+}
+
+h2 {
+  text-align: center;
+  color: #3a3a3a;
+  margin-bottom: 30px;
+}
+
+body.dark-mode {
+  background-color: #121212;
+  color: #eee;
+}
+
+body.dark-mode h2 {
+  color: #eee;
+}
+
+/* --- Sohbet Kutusu --- */
+#chatbox {
+  background-color: #fff0f5;
+  border: 1px solid #d54f71;
+  border-radius: 12px;
+  padding: 15px;
+  height: 300px;
+  max-width: 600px;
+  margin: 0 auto 20px;
+  overflow-y: auto;
+}
+
+#chatbox::-webkit-scrollbar {
+  width: 8px;
+}
+
+#chatbox::-webkit-scrollbar-thumb {
+  background: #d54f71;
+  border-radius: 6px;
+}
+
+body.dark-mode #chatbox {
+  background-color: #1f1f1f;
+  border: 1px solid #444;
+}
+
+body.dark-mode #chatbox::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
+/* --- Giriş Kutusu ve Buton --- */
+input[type="text"],
+select#recipient {
+  padding: 12px;
+  width: 70%;
+  max-width: 400px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+select#recipient {
+  margin-bottom: 10px;
+  width: 75%;
+  max-width: 420px;
+}
+
+button {
+  padding: 12px 20px;
+  background-color: #378e85;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2c6e66;
+}
+
+body.dark-mode input[type="text"],
+body.dark-mode select#recipient {
+  background-color: #2a2a2a;
+  color: #eee;
+  border: 1px solid #555;
+}
+
+body.dark-mode button {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-mode button:hover {
+  background-color: #666;
+}
+
+/* --- Mesaj Balonları Genel --- */
+.message {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 14px;
+  border-radius: 12px;
+  margin: 8px;
+  max-width: 90%;
+  word-break: break-word;
+  clear: both;
+}
+
+/* Avatar */
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 8px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* Kendi mesajı */
+.own-message {
+  background-color: #96bfca;
+  color: black;
+  margin-left: auto;
+  text-align: right;
+  float: right;
+}
+
+.other-message {
+  background-color: #e0cec1;
+  color: black;
+  margin-right: auto;
+  text-align: left;
+  float: left;
+}
+
+/* --- Dark Mode Mesajlar --- */
+body.dark-mode .own-message {
+  background-color: #000;
+  color: #eee;
+}
+
+body.dark-mode .other-message {
+  background-color: #959191;
+  color: #000;
+}
+
+/* --- Özel Mesajlar --- */
+.private-message {
+  border: 2px dashed #000;
+  background-color: #fff4f6;
+  opacity: 0.95;
+}
+
+.private-message .own-message {
+  border: 2px dashed #007bff;
+  background-color: #cce5ff;
+  color: #003366;
+}
+
+.private-message .other-message {
+  border: 2px dashed #ff6347;
+  background-color: #ffe4e1;
+  color: #800000;
+}
+
+/* Dark Mode Özel Mesaj */
+body.dark-mode .private-message {
+  border: 2px dashed #f0f0f0;
+  background-color: #1f1f1f;
+  color: #eee;
+}
+
+body.dark-mode .private-message .own-message {
+  border: 2px dashed #3399ff;
+  background-color: #1a2e4b;
+  color: #cce6ff;
+}
+
+body.dark-mode .private-message .other-message {
+  border: 2px dashed #ff4500;
+  background-color: #4b1a1a;
+  color: #ffb3b3;
+}
+
+/* --- Yazma Animasyonu --- */
+.dot-anim {
+  visibility: hidden;
+}
+
+.dot-anim .dot::after {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  text-align: left;
+  animation: typing-dots 1.2s infinite;
+}
+
+@keyframes typing-dots {
+  0% { content: ""; }
+  33% { content: "."; }
+  66% { content: ".."; }
+  100% { content: "..."; }
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  input[type="text"],
+  button,
+  select#recipient {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  #chatbox {
+    height: 250px;
+    padding: 10px;
+  }
+}
+
+/* --- Emoji Butonu --- */
+#emojiBtn {
+  padding: 12px;
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+/* Emoji paneli z-index ile ön plana alınabilir */
+.emoji-picker {
+  z-index: 9999 !important;
+}
