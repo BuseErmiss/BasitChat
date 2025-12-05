@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from typing import Dict
-from database import get_db, Kullanici, Mesaj
+from backend.database import get_db, Kullanici, Mesaj
 import json
 from utils import hash_password, verify_password
 import pytz
