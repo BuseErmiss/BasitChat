@@ -8,7 +8,7 @@ from sqlalchemy import or_
 from typing import Dict
 from backend.database import get_db, Kullanici, Mesaj
 import json
-from utils import hash_password, verify_password
+from backend.utils import hash_password, verify_password
 import pytz
 import re
 
