@@ -4,3 +4,6 @@ sqlalchemy
 passlib[bcrypt]
 python-multipart
 aiosqlite
+pytz
+jinja2
+websockets
