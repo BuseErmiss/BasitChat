@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Basit Chat - Dark Mode</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <audio id="messageSound" src="/static/sound/notify.mp3" preload="auto"></audio>
+</head>
+<body>
+  <!-- Tema butonu -->
+  <button id="toggleDarkMode" class="top-btn">🌙 Dark Mode</button>
+
+  <h2>Chat Odası</h2>
+  <hr />
+
+  <!-- Sohbet kutusu -->
+  <div id="chatbox"></div>
+
+  <!-- Yazıyor bildirimi -->
+  <div id="typing-indicator">
+    <span id="typing-user"></span>
+    <span class="dot-anim" style="visibility: hidden;">yazıyor<span class="dot"></span></span>
+  </div>
+
+  <!-- Alıcı seçimi -->
+  <select id="recipient">
+    <option value="">Herkese</option>
+  </select>
+
+  <!-- Mesaj alanı -->
+  <div class="input-area">
+    <input type="text" id="message" placeholder="Mesaj yaz..." disabled />
+    <button id="emojiBtn" title="Emoji Ekle">😊</button>
+    <button id="sendBtn" disabled>Gönder</button>
+  </div>
+
+  <!-- Kullanıcı adı -->
+  <script>
+    const username = "{{ username }}";
+  </script>
+
+  <!-- JS Dosyaları -->
+  <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
+  <script type="module" src="/static/main.js"></script>
+</body>
+</html>
