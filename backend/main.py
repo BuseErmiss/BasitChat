@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -116,8 +116,25 @@ async def chat_page(request: Request, user: Kullanici = Depends(get_current_user
         "username": user.KullaniciAdi
     })
 
+# 🔥 YENİ SİLME FONKSİYONU (JAVASCRIPT İÇİN)
+@app.delete("/delete_message/{id}")
+def delete_message(id: int, request: Request, db: Session = Depends(get_db)):
+    # 1. Oturum açmış kullanıcıyı bul (Cookie'den)
+    username = request.cookies.get("username")
+    if not username:
+        raise HTTPException(status_code=401, detail="Giriş yapmalısınız")
 
-# --- WebSocket Kısmı Aynen ---
+    # 2. Silinmek istenen mesajı bul
+    mesaj = db.query(Mesaj).filter(Mesaj.Id == id).first()
+
+    # 3. GÜVENLİK KONTROLÜ: Mesaj var mı VE silen kişi mesajın sahibi mi?
+    if mesaj and mesaj.KullaniciAdi == username:
+        db.delete(mesaj)
+        db.commit()
+        return {"status": "ok", "message_id": id}
+    
+    raise HTTPException(status_code=403, detail="Bu mesajı silemezsiniz veya mesaj yok")
+
 
 # --- WebSocket Kısmı ---
 
@@ -139,6 +156,7 @@ async def send_chat_history(websocket: WebSocket, db: Session, username: str):
         formatted_time = mesaj.Zaman.astimezone(istanbul).isoformat()
 
         mesaj_str = json.dumps({
+            "id": mesaj.Id,  # 🔥 BURASI EKLENDİ (Frontend ID bilsin diye)
             "gonderen": mesaj.KullaniciAdi,
             "alici": mesaj.Alici,
             "icerik": mesaj.Icerik,
@@ -223,6 +241,7 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
 
             zaman_obj = yeni_mesaj.Zaman.astimezone(istanbul)
             mesaj_str = json.dumps({
+                "id": yeni_mesaj.Id, # 🔥 BURASI EKLENDİ (Yeni mesajın ID'si)
                 "gonderen": gonderen,
                 "alici": alici,
                 "icerik": icerik,
