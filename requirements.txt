@@ -8,3 +8,5 @@ aiosqlite
 pytz
 jinja2
 websockets
+asyncpg
+psycopg2-binary
