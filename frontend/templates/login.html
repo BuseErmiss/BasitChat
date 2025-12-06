@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html>
-<head><title>Giriş Yap</title></head>
-  <link rel="stylesheet" href="/static/style-login-register.css" />
-  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="/static/style-login-register.css" />
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
 
 <body>
   <h2>Giriş Yap</h2>
@@ -17,18 +21,17 @@
   </form>
 
   <p>Hesabınız yok mu? <a href="/register">Kayıt Ol</a></p>
+
+  <button id="toggleDarkMode">🌙 Dark Mode</button>
+
+  <script>
+    const toggleBtn = document.getElementById("toggleDarkMode");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleBtn.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    });
+  </script>
 </body>
 </html>
-
-
-<button id="toggleDarkMode">🌙 Dark Mode</button>
-
-<script>
-  const toggleBtn = document.getElementById("toggleDarkMode");
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    toggleBtn.textContent = document.body.classList.contains("dark-mode")
-      ? "☀️ Light Mode"
-      : "🌙 Dark Mode";
-  });
-</script>

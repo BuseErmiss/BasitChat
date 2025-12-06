@@ -100,3 +100,18 @@ body.dark-mode button:hover {
 body.dark-mode a {
     color: #aad2d1;
 }
+
+/* --- MOBİL UYUMLULUK --- */
+@media screen and (max-width: 600px) {
+    form {
+        width: 90%;       /* Form ekranı kaplasın */
+        margin: 20px auto; 
+    }
+
+    input, button {
+        width: 100%;      /* Butonlar parmakla basılacak kadar geniş olsun */
+        padding: 12px;
+        font-size: 16px;  /* Yazılar okunaklı olsun */
+        box-sizing: border-box;
+    }
+}
