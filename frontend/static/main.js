@@ -5,6 +5,9 @@ let typingUsers = new Set();
 let onlineUsers = new Set();
 let yaziyorTimeout;
 
+// Global değişkene kullanıcı adını al (HTML'den geliyor)
+// (index.html içindeki <script>const username = ...</script> sayesinde)
+
 function connect() {
   if (!username) {
     alert("Kullanıcı adı alınamadı.");
@@ -17,6 +20,7 @@ function connect() {
   ws.onopen = () => {
     document.getElementById("message").disabled = false;
     document.getElementById("sendBtn").disabled = false;
+    console.log("WebSocket Bağlandı ✅");
   };
 
   ws.onmessage = (event) => {
@@ -43,11 +47,12 @@ function connect() {
         return;
     }
 
+    // Normal mesaj ise ekrana bas
     displayMessage(msg);
   };
 
   ws.onclose = () => {
-    alert("Sunucuyla bağlantı koptu. Yeniden bağlanılıyor...");
+    console.log("Bağlantı koptu, tekrar deneniyor...");
     document.getElementById("message").disabled = true;
     document.getElementById("sendBtn").disabled = true;
     setTimeout(connect, 3000);
@@ -55,7 +60,8 @@ function connect() {
 }
 
 function sendMessage() {
-  const msg = document.getElementById("message").value.trim();
+  const msgInput = document.getElementById("message");
+  const msg = msgInput.value.trim();
   const recipient = document.getElementById("recipient").value;
 
   if (!msg) return;
@@ -63,11 +69,15 @@ function sendMessage() {
   const mesajObjesi = {
     gonderen: username,
     alici: recipient || "",
-    icerik: msg
+    icerik: msg,
+    type: "mesaj"
   };
 
   ws.send(JSON.stringify(mesajObjesi));
-  document.getElementById("message").value = "";
+  msgInput.value = "";
+  
+  // Mesaj gönderince yazıyor bilgisini hemen durdur
+  ws.send(JSON.stringify({ type: "durdu", gonderen: username }));
 }
 
 function escapeHtml(unsafe) {
@@ -79,6 +89,7 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
+// 🔥 GÜNCELLENEN KISIM: displayMessage
 function displayMessage(msg) {
   const chatbox = document.getElementById("chatbox");
   const isOwn = msg.gonderen === username;
@@ -87,6 +98,11 @@ function displayMessage(msg) {
   div.classList.add("message", isOwn ? "own-message" : "other-message");
   if (msg.alici) {
     div.classList.add("private-message");
+  }
+
+  // 🔥 Mesajın ID'sini elemente ekle (Silme işlemi için gerekli)
+  if (msg.id) {
+    div.id = "msg-" + msg.id;
   }
 
   // Tarih formatı
@@ -106,7 +122,7 @@ function displayMessage(msg) {
   avatar.style.backgroundColor = renk;
   avatar.title = msg.gonderen;
 
-  // Kullanıcı adı ve içerik
+  // Kullanıcı adı ve ok işareti
   const strong = document.createElement("strong");
   strong.textContent = msg.gonderen + (msg.alici ? ` ➡ ${msg.alici}` : "");
   strong.style.color = renk;
@@ -117,16 +133,38 @@ function displayMessage(msg) {
   timeSpan.textContent = `[${zaman}] `;
   timeSpan.style.opacity = "0.6";
   timeSpan.style.marginRight = "6px";
+  timeSpan.style.fontSize = "0.8em";
 
   // Mesaj içeriği
   const content = document.createElement("span");
   content.innerHTML = escapeHtml(msg.icerik);
+
+  // 🔥 SİLME BUTONU EKLEME KISMI
+  let deleteBtn = null;
+  if (isOwn && msg.id) {
+      deleteBtn = document.createElement("span");
+      deleteBtn.textContent = "❌"; // İstersen 🗑️ yapabilirsin
+      deleteBtn.className = "delete-btn"; // CSS için sınıf
+      deleteBtn.title = "Mesajı Sil";
+      deleteBtn.style.cursor = "pointer";
+      deleteBtn.style.marginLeft = "10px";
+      
+      // Tıklanınca silme fonksiyonunu çağır
+      deleteBtn.onclick = function() {
+          deleteMessage(msg.id);
+      };
+  }
 
   // İçerikleri saran kutu
   const textWrapper = document.createElement("div");
   textWrapper.appendChild(timeSpan);
   textWrapper.appendChild(strong);
   textWrapper.appendChild(content);
+
+  // Eğer silme butonu oluşturulduysa ekle
+  if (deleteBtn) {
+      textWrapper.appendChild(deleteBtn);
+  }
 
   // Tüm bileşenleri ana div'e ekle
   div.appendChild(avatar);
@@ -141,9 +179,34 @@ function displayMessage(msg) {
     const sound = document.getElementById("messageSound");
     if (sound) {
       sound.currentTime = 0;
-      sound.play();
+      sound.play().catch(e => console.log("Ses çalma engellendi"));
     }
   }
+}
+
+// 🔥 YENİ EKLENEN FONKSİYON: Mesaj Silme
+async function deleteMessage(id) {
+    if (!confirm("Bu mesajı silmek istediğine emin misin?")) return;
+
+    try {
+        const response = await fetch(`/delete_message/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            // Başarılıysa HTML elementini kaldır
+            const element = document.getElementById("msg-" + id);
+            if (element) {
+                // Hafif bir animasyonla sil
+                element.style.opacity = "0";
+                setTimeout(() => element.remove(), 300);
+            }
+        } else {
+            alert("Mesaj silinemedi! Yetkiniz olmayabilir.");
+        }
+    } catch (error) {
+        console.error("Silme hatası:", error);
+    }
 }
 
 function updateTypingIndicator() {
@@ -154,6 +217,9 @@ function updateTypingIndicator() {
 
 function updateRecipientList() {
   const select = document.getElementById("recipient");
+  // Mevcut seçimi koru
+  const currentSelection = select.value;
+  
   select.innerHTML = `<option value="">Herkese</option>`;
 
   const users = [...onlineUsers].sort((a, b) => {
@@ -166,9 +232,14 @@ function updateRecipientList() {
     if (user === username) return;
     const option = document.createElement("option");
     option.value = user;
-    option.textContent = user;
+    option.textContent = user + " 🟢";
     select.appendChild(option);
   });
+
+  // Eğer eski seçilen kullanıcı hala onlinedaysa onu seçili bırak
+  if (onlineUsers.has(currentSelection)) {
+      select.value = currentSelection;
+  }
 }
 
 window.addEventListener("load", () => {
@@ -198,45 +269,48 @@ window.addEventListener("load", () => {
 
   document.getElementById("sendBtn").addEventListener("click", sendMessage);
 
-  document.getElementById("toggleDarkMode").addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    const toggleBtn = document.getElementById("toggleDarkMode");
-    toggleBtn.textContent = document.body.classList.contains("dark-mode")
-      ? "☀️ Light Mode"
-      : "🌙 Dark Mode";
-  });
+  const darkModeBtn = document.getElementById("toggleDarkMode");
+  if(darkModeBtn) {
+      darkModeBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        darkModeBtn.textContent = document.body.classList.contains("dark-mode")
+          ? "☀️ Light Mode"
+          : "🌙 Dark Mode";
+      });
+  }
 
-  // 👇👇 EMOJI PICKER sadece burada başlasın
-  const picker = new EmojiButton({
-    position: 'top-start', // Emoji picker'ın konumu
-    zIndex: 10000
-  });
+  // EMOJI PICKER
+  if (window.EmojiButton) {
+      const picker = new EmojiButton({
+        position: 'top-start',
+        zIndex: 10000
+      });
 
-  const emojiBtn = document.getElementById('emojiBtn');
-  const input = document.getElementById('message');
+      const emojiBtn = document.getElementById('emojiBtn');
+      const input = document.getElementById('message');
 
-  emojiBtn.addEventListener('click', () => {
-    picker.togglePicker(emojiBtn);
-  });
+      if (emojiBtn && input) {
+          emojiBtn.addEventListener('click', () => {
+            picker.togglePicker(emojiBtn);
+          });
 
-  picker.on('emoji', emoji => {
-    input.value += emoji.emoji;
-    input.focus();
-  });
+          picker.on('emoji', emoji => {
+            input.value += emoji.emoji;
+            input.focus();
+          });
+      }
+  }
 });
 
-// 🔵 Avatar renkleri için sabit renk algoritması
-const userColors = {};  // Kullanıcılara renk atamak için
+// Avatar renkleri
+const userColors = {};
 function getColorForUser(username) {
   if (userColors[username]) return userColors[username];
-
-  // Her kullanıcıya sabit bir renk üret
   let hash = 0;
   for (let i = 0; i < username.length; i++) {
     hash = username.charCodeAt(i) + ((hash << 5) - hash);
   }
-
-  const color = `hsl(${hash % 360}, 60%, 70%)`; // pastel renk üret
+  const color = `hsl(${hash % 360}, 60%, 70%)`;
   userColors[username] = color;
   return color;
 }

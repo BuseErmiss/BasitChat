@@ -116,7 +116,7 @@ async def chat_page(request: Request, user: Kullanici = Depends(get_current_user
         "username": user.KullaniciAdi
     })
 
-# 🔥 YENİ SİLME FONKSİYONU (JAVASCRIPT İÇİN)
+# 🔥 YENİ SİLME FONKSİYONU
 @app.delete("/delete_message/{id}")
 def delete_message(id: int, request: Request, db: Session = Depends(get_db)):
     # 1. Oturum açmış kullanıcıyı bul (Cookie'den)

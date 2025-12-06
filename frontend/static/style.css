@@ -241,19 +241,23 @@ body.dark-mode .private-message .other-message {
   z-index: 9999 !important;
 }
 
-/* style.css en alta ekle */
+/* --- style.css dosyasının sonuna ekle --- */
 
 .delete-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    margin-left: 10px;
-    opacity: 0.7;
-    transition: 0.3s;
+    cursor: pointer;      /* Üzerine gelince el işareti çıksın */
+    margin-left: 10px;    /* Mesajdan biraz ayrı dursun */
+    font-size: 14px;      /* Çok büyük olmasın */
+    color: red;           /* Kırmızı olsun */
+    opacity: 0.6;         /* Biraz silik dursun */
+    transition: 0.3s;     /* Animasyonlu geçiş */
 }
 
 .delete-btn:hover {
-    opacity: 1;
-    transform: scale(1.2); /* Üzerine gelince hafif büyüsün */
+    opacity: 1;           /* Üzerine gelince tam parlasın */
+    transform: scale(1.2); /* Hafif büyüsün */
+}
+
+/* Mesaj silinirken kullanılacak geçiş efekti */
+.message {
+    transition: opacity 0.3s ease;
 }
